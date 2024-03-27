@@ -1,1 +1,492 @@
-Hello World
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="Analogist: Out-of-the-box Visual In-Context Learning with Image Diffusion Model.">
+  <meta name="keywords" content="Analogist, Visual In-Context Learning, Diffusion Models, Image Transformation">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Analogist: Out-of-the-box Visual In-Context Learning with Image Diffusion Model</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <link rel="icon" href="./static/images/icon.png">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+  <script type="text/javascript" async
+    src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML">
+  </script>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">
+            Analogist: Out-of-the-box Visual In-Context Learning with Image Diffusion Model
+          </h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="index.html">Zheng Gu</a><sup>1,2</sup>,</span>
+            <span class="author-block">
+              <a href="index.html">Shiyuan Yang</a><sup>2,3</sup>,</span>
+            <span class="author-block">
+              <a href="index.html">Jing Liao</a><sup>2</sup>,
+            </span>
+            <span class="author-block">
+              <a href="index.html">Jing Huo</a><sup>1</sup>,
+            </span>
+            <span class="author-block">
+              <a href="index.html">Yang Gao</a><sup>1</sup>
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>Nanjing University,</span>
+            <span class="author-block"><sup>2</sup>City University of Hong Kong,</span>
+            <span class="author-block"><sup>3</sup>Tianjin University</span>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <div>
+        <img src="./static/images/teaser.jpg"/>
+      </div>
+    </div>
+  </div>
+  <div class="container is-max-desktop">
+    <div width="100%" style="font-size: 20px; text-align: center;">
+      <b>TL;DR</b>: Analogist is a visual In-Context Learning approach that leverages pre-trained Diffusion Models for various tasks with few example pairs, without requiring fine-tuning or optimization.
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="hero-body">
+    
+  </div>
+</section>
+
+
+<section class="section hero is-light">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Visual In-Context Learning (ICL) has emerged as a promising research area due to its capability to accomplish various tasks with limited example pairs through analogical reasoning. However, training-based visual ICL has limitations in its ability to generalize to unseen tasks and requires the collection of a diverse task dataset. On the other hand, existing methods in the inference-based visual ICL category solely rely on textual prompts, which fail to capture fine-grained contextual information from given examples and can be time-consuming when converting from images to text prompts.
+          </p>  
+          <p>
+            To address these challenges, we propose Analogist, a novel inference-based visual ICL approach that exploits both visual and textual prompting techniques using a text-to-image diffusion model pretrained for image inpainting. For visual prompting, we propose a self-attention cloning (SAC) method to guide the fine-grained structural-level analogy between image examples. For textual prompting, we leverage GPT-4V's visual reasoning capability to efficiently generate text prompts and introduce a cross-attention masking (CAM) operation to enhance the accuracy of semantic-level analogy guided by text prompts.
+          </p>
+          <p>
+            Our method is out-of-the-box and does not require fine-tuning or optimization. It is also generic and flexible, enabling a wide range of visual tasks to be performed in an in-context manner. Extensive experiments demonstrate the superiority of our method over existing approaches, both qualitatively and quantitatively. Our code will be made available to facilitate future research.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+  </div>
+</section>
+
+<section class="section">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <!-- Method. -->
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-full-width">
+          <h2 class="title is-3">Method</h2>
+          <img src="./static/images/framework.jpg"/>
+          <div class="content has-text-justified">
+            <p>
+              Overview of the proposed Analogist. A visual demonstration is defined by an example pair \(A\) (woman holding a cat) and \(A'\) (the same woman holding a tiger). Given a new image \(B\) (another cat), we format these three images into a \(2 \times 2\) grid and tackle this problem by fill the missing image via a pretrained Stable Diffusion inpainting model. The images are arranged into a \(2 \times 2\) grid and feed into a pretrained inpainting model. We employ GPT-4V to provide a proper text description (<i>i.e.</i>, "close-up of a tiger's face") to further guide the inpainting process. During the process of model inference, Self-Attention Cloning (SAC) and Cross-Attention Masking (CAM) are introduced to encourage the model concentrate on the visual and textual prompts
+            </p>
+          </div>
+        </div>
+      </div>
+      <!--/ Method. -->
+      
+      <div class="columns is-centered">
+        <!-- Self-Attention Cloning (SAC). -->
+        <div class="column">
+          <div class="content">
+            <h3 class="title is-4">Self-Attention Cloning (SAC)</h3>
+            <img src="./static/images/sac.jpg"/>
+            <p>
+              The sub self-attention map \(\mathcal{M}_s(A',B')\) is set as the value of \(\mathcal{M}_s(A,B)\), denoting cloning the relation between \(A\) and \(B\) to that of \(A'\) and \(B'\).
+            </p>
+          </div>
+        </div>
+        <!--/ Self-Attention Cloning (SAC). -->
+
+        <!-- Cross-Attention Masking (CAM). -->
+        <div class="column">
+          <div class="content">
+            <h3 class="title is-4">Cross-Attention Masking (CAM)</h3>
+            <img src="./static/images/cam.jpg"/>
+            <p>
+              The sub cross-attention map between text embedding and regions \(A\), \(A'\), and \(B\) are set to zero, making the semantic guidance more focused on region \(B'\).
+            </p>
+          </div>
+        </div>
+        <!--/ Cross-Attention Masking (CAM). -->
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <!-- Results. -->
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-full-width">
+          <h2 class="title is-3">Results</h2>
+        </div>
+      </div>
+      <div class="column is-full-width">
+        <h3 class="title is-4">Image Colorization</h3>
+        <div class="container is-max-desktop">
+          <div id="results-carousel" class="carousel results-carousel">
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/colorization_000.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/colorization_001.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/colorization_002.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/colorization_003.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/colorization_004.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/colorization_005.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/colorization_006.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/colorization_007.jpg"/>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="column is-full-width">
+        <h3 class="title is-4">Image Deblurring</h3>
+        <div class="container is-max-desktop">
+          <div id="results-carousel" class="carousel results-carousel">
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/deblur_000.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/deblur_001.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/deblur_002.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/deblur_003.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/deblur_004.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/deblur_005.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/deblur_006.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/deblur_007.jpg"/>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="column is-full-width">
+        <h3 class="title is-4">Image Denoising</h3>
+        <div class="container is-max-desktop">
+          <div id="results-carousel" class="carousel results-carousel">
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/denoise_000.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/denoise_001.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/denoise_002.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/denoise_003.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/denoise_004.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/denoise_005.jpg"/>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="column is-full-width">
+        <h3 class="title is-4">Low-light Enhancement</h3>
+        <div class="container is-max-desktop">
+          <div id="results-carousel" class="carousel results-carousel">
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/enhancement_000.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/enhancement_001.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/enhancement_002.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/enhancement_003.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/enhancement_004.jpg"/>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="column is-full-width">
+        <h3 class="title is-4">Image Editing</h3>
+        <div class="container is-max-desktop">
+          <div id="results-carousel" class="carousel results-carousel">
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/image_editing_000.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/image_editing_001.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/image_editing_002.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/image_editing_003.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/image_editing_004.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/image_editing_005.jpg"/>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="column is-full-width">
+        <h3 class="title is-4">Image Translation</h3>
+        <div class="container is-max-desktop">
+          <div id="results-carousel" class="carousel results-carousel">
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/image_translation_000.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/image_translation_001.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/image_translation_002.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/image_translation_003.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/image_translation_004.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/image_translation_005.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/image_translation_006.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/image_translation_007.jpg"/>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="column is-full-width">
+        <h3 class="title is-4">Style Transfer</h3>
+        <div class="container is-max-desktop">
+          <div id="results-carousel" class="carousel results-carousel">
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/style_transfer_000.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/style_transfer_001.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/style_transfer_002.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/style_transfer_003.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/style_transfer_004.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/style_transfer_005.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/style_transfer_006.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/style_transfer_007.jpg"/>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="column is-full-width">
+        <h3 class="title is-4">Skeleton-to-image</h3>
+        <div class="container is-max-desktop">
+          <div id="results-carousel" class="carousel results-carousel">
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/ubcfashion_000.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/ubcfashion_001.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/ubcfashion_002.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/ubcfashion_003.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/colorization_004.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/colorization_005.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/colorization_006.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/colorization_007.jpg"/>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="column is-full-width">
+        <h3 class="title is-4">Mask-to-image</h3>
+        <div class="container is-max-desktop">
+          <div id="results-carousel" class="carousel results-carousel">
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/scannet_000.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/scannet_001.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/scannet_002.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/scannet_003.jpg"/>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="column is-full-width">
+        <h3 class="title is-4">Image Inpainting</h3>
+        <div class="container is-max-desktop">
+          <div id="results-carousel" class="carousel results-carousel">
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/inpainting_000.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/inpainting_001.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/inpainting_002.jpg"/>
+            </div>
+            <div class="item" style="margin: 0px; overflow: auto; border:0px; text-align: center;">
+              <img src="./static/images/results/inpainting_003.jpg"/>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--/ Results. -->
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <!-- Results. -->
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-full-width">
+          <h2 class="title is-3">More Applications</h2>
+        </div>
+      </div>
+      <div class="column is-full-width">
+        <h3 class="title is-4">\(A\) and \(A'\) are aligned</h3>
+        <img src="./static/images/application_aligned.jpg"/>
+      </div>
+      <div class="column is-full-width">
+        <h3 class="title is-4">\(A\) and \(A'\) are not aligned</h3>
+        <img src="./static/images/application_unaligned.jpg"/>
+      </div>
+      
+      <!--/ Results. -->
+    </div>
+  </div>
+</section>
+
+
+
+<footer class="footer">
+  <div class="container">
+
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This website is licensed under a <a rel="license"
+                                                href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+          <p>
+            This means you are free to borrow the <a
+              href="https://github.com/nerfies/nerfies.github.io">source code</a> of this website,
+            we just ask that you link back to this page in the footer.
+            Please remember to remove the analytics code included in the header of the website which
+            you do not want on your website.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
